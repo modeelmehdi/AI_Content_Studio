@@ -11,7 +11,7 @@ export default function SocialShare({text,title}:{text:string;title:string}) {
     <h3 className="font-semibold text-white">Review & share</h3>
     <p className="text-xs leading-5 text-slate-400">You choose what to publish. These links open social apps; your accounts are not connected to Studio. Instagram requires an image or video added in Instagram.</p>
     <div className="flex flex-wrap gap-2">
-      <a className="rounded-lg border border-slate-600 px-3 py-2 text-sm" href={`https://x.com/intent/tweet?text=${encoded}`} target="_blank" rel="noopener noreferrer">Compose on X / Twitter</a>
+      <a className="rounded-lg border border-slate-600 px-3 py-2 text-sm" href={`https://x.com/intent/tweet?text=${encoded}`} target="_blank" rel="noopener noreferrer" onClick={e=>{if(Array.from(text).length>280){e.preventDefault();setNotice('Shorten the content to 280 characters before opening X, or copy it to create a thread there.')}}}>Compose on X / Twitter</a>
       <a className="rounded-lg border border-slate-600 px-3 py-2 text-sm" href={`https://wa.me/?text=${encoded}`} target="_blank" rel="noopener noreferrer">Share on WhatsApp</a>
       {[
         ['Instagram','https://www.instagram.com/'],
