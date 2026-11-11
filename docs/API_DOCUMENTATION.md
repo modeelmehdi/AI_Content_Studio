@@ -22,3 +22,9 @@ All mutation requests require an allowlisted `Origin`. Authenticated mutations a
 | GET | /api/dashboard/recent-content | Recent owned items |
 
 Generation input includes topic, tone, length, audience, language, keywords, instructions, industry, image_style and aspect_ratio. See live OpenAPI for exact limits and optional fields. Errors use `detail` and appropriate 400/401/403/404/422/429/502/503/504 status codes. Missing provider configuration returns a useful error, not generated-looking placeholder text.
+
+## Post media and allowances
+
+GET /api/usage returns the authenticated user's remaining image allowance, shared workspace availability, saved-library capacity and UTC reset time. Only successful image generations count toward daily image allowances.
+
+PUT /api/content/{id} also accepts image_id (a valid UUID or null) and sound_effect (none, chime, pop, whoosh). Image references must point to an owned image; another account's image returns 404. Facebook and Threads are supported generator kinds in addition to the original six routes. Original effects and motion rendering are client-side; there is no paid audio or video API endpoint.

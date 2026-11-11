@@ -1,20 +1,35 @@
 # AI Content Studio
 
-An authenticated writing workspace by **Modeel Mehdi**. Generate blog articles, LinkedIn posts, Instagram captions, X/Twitter posts and SEO copy; edit results, search your saved library, and export TXT or PDF. The supplied cyan/navy frontend is preserved and connected to a real FastAPI backend.
+A free social content workspace by **Modeel Mehdi**: start with your brand, get a post idea, add a matching visual and original sound, then render a short motion post to review and share.
 
-[Owner's portfolio](https://modeelmehdi.netlify.app) · [Portfolio administration](https://modeelmehdi.netlify.app/admin)
+**[Open the live studio](https://modeel-ai-content-studio.netlify.app)** · [Portfolio](https://modeelmehdi.netlify.app) · [Portfolio admin](https://modeelmehdi.netlify.app/admin)
 
-## Implemented
+![Quick post studio](docs/post-studio-desktop.jpg)
 
-- React 19, TypeScript and Vite frontend with responsive workspace routes.
-- FastAPI, PyMongo Async, MongoDB persistence and typed validation.
-- Argon2 passwords, HttpOnly access/refresh cookies, rotating revocable sessions, CSRF and ownership checks.
-- Five real Gemini text generators, bounded retries, useful errors and request limits.
-- Manual drafts, editing, search, filters, pagination, statistics and preferences.
-- PDF/TXT exports and user-controlled social sharing links.
-- Real FLUX image generation through Cloudflare Workers AI Free, with private persistent MongoDB images.
+## What it does
 
-Social links open a composer or copy content and open the chosen app. Users review and publish there. Studio does not connect social accounts or publish automatically on login.
+- Quick Post turns a brand description and optional topic into a platform-specific draft and next-post suggestions.
+- Seven text tools cover Instagram, Facebook, Threads, X/Twitter, LinkedIn, blogs and SEO.
+- Real Gemini writing uses a validated free Cloudflare/IBM Granite backup during temporary provider failures.
+- Real FLUX image generation saves private, ownership-checked images in MongoDB.
+- A post can retain its selected visual and original chime, pop or whoosh effect.
+- Browser rendering creates a six-second motion post with the image, title, an excerpt and sound. MP4 is used when supported; other browsers offer WebM and say so clearly.
+- Original WAV effects and motion rendering require no AI API credit.
+- Private history, editing, search, filters, preferences, statistics, PDF/TXT exports and guided starters support the rest of the workflow.
+
+Social sharing links open a composer or copy content and open the selected app. Users review and publish there. Connected-account auto-publishing is not configured, and logging in never publishes a post.
+
+## Free use and honest limits
+
+No billing or paid plan is enabled. AI depends on provider availability and free allowances. The app permits up to 20 successful images per user and 50 per workspace each UTC day, subject to the provider's own quota, with a bounded 100-image library. Failed image generations do not consume this application allowance. Images are compressed and center-cropped to the selected ratio. Guided starters, editing, original sound generation and browser motion rendering do not require an AI call.
+
+Text models can be temporarily busy. The app preserves the brief, retries transient failures and uses its verified free backup where available. It reports quota resets rather than pretending unlimited inference is possible.
+
+## Stack and security
+
+React 19 / TypeScript / Vite / Tailwind frontend; FastAPI / Python 3.12 / PyMongo Async / Atlas backend. The owner's supplied cyan/navy interface is preserved.
+
+Passwords use Argon2. HttpOnly secure access/refresh cookies reference rotating, revocable server sessions. Trusted origins, CSRF checks, typed validation, request limits and per-user ownership checks protect private data. All provider and database credentials stay on the server. No passwords or access tokens are stored in localStorage.
 
 ## Run locally
 
@@ -28,7 +43,7 @@ npm --prefix frontend ci
 .\.venv\Scripts\python.exe scripts/setup-local.py
 ```
 
-In separate terminals:
+Configure the ignored backend/.env from backend/.env.example. Use authorized free-tier Gemini and Cloudflare Workers AI credentials; do not paste keys into browser code. In separate terminals:
 
 ```powershell
 npm run db:local
@@ -42,9 +57,9 @@ npm run db:local
 npm run frontend
 ```
 
-Open http://127.0.0.1:5175. Configure an authorized free-tier Gemini key and supported text model in ignored backend/.env. Without provider configuration, manual drafts work and generation reports configuration errors. The local database script runs actual MongoDB with persistent development data in ignored .local/mongodb. Production uses Atlas.
+Open http://127.0.0.1:5175. The local database helper runs actual MongoDB and persists development data in ignored .local/mongodb. Production uses Atlas. Set MEDIA_STORAGE=mongodb to use the persistent image library; SQLite is an explicit development-only option, never an automatic fallback.
 
-## Validation
+## Verification
 
 ```powershell
 npm run lint
@@ -54,11 +69,16 @@ $env:TEST_MONGODB_URI='mongodb://127.0.0.1:27019'
 ..\.venv\Scripts\python.exe -m pytest -q
 ```
 
-The suite covers SQLite and real MongoDB when TEST_MONGODB_URI is set. Fake AI fixtures exist only inside tests. All five real free-tier text generators, real Cloudflare image generation, persistence and PDF export passed verification; see [recorded results](docs/LOCAL_VERIFICATION.json). Local checks do not establish production availability.
+43 backend tests passed; one MongoDB-specific case is intentionally skipped for the SQLite parameter. Tests cover authentication, CSRF, rotation/revocation, isolation, all eight generation routes, owned CRUD, exports, private image persistence, visual/sound attachments, successful-only quotas and backup recovery. Test doubles exist only inside tests.
 
-## Deployment and limits
+Real text/image generation, production exports, saved attachments, cross-account isolation and logout were verified on the public app. The original sound WAVs and an actual 720×1280 MP4 preview were also checked. Browser file-download testing was not completed because permission was declined; API download responses passed before that decision.
 
-[Free deployment](docs/DEPLOYMENT.md) · [Architecture](docs/ARCHITECTURE.md) · [API](docs/API_DOCUMENTATION.md) · [Audit](PROJECT_AUDIT.md)
+[Public checks](docs/PUBLIC_VERIFICATION.json) · [Updated workflow checks](docs/PUBLIC_V2_VERIFICATION.json) · [Image check](docs/IMAGE_VERIFICATION.json)
 
-The release uses Vercel Hobby for FastAPI, Netlify for the frontend, Atlas Free, Gemini free text access and Cloudflare Workers AI Free images. Render requested a card and was not used. No paid subscription or billing integration is enabled. Free tiers have quotas. Images are limited to three per user per day and twenty per workspace per day, with up to 100 saved images. Images are center-cropped to the selected ratio and compressed to fit the free database allowance. Connected-account publishing needs separate provider OAuth applications and permissions. API keys, database passwords and session secrets stay out of Git and browser code.
+## Deployment
 
+Vercel Hobby hosts FastAPI; Netlify hosts the frontend and same-origin proxy; Atlas Free persists data. Cloudflare Workers AI remains on Free. Render requested a payment card and was not used.
+
+[Deployment guide](docs/DEPLOYMENT.md) · [Architecture](docs/ARCHITECTURE.md) · [API](docs/API_DOCUMENTATION.md) · [Initial audit and progress](PROJECT_AUDIT.md)
+
+The GitHub Actions configuration is provided as an optional template at docs/github-actions.example.yml. It is not installed as an active workflow. Provider quotas, plan policies and browser codec support can change; no paid upgrade or automatic social publishing is part of this release.

@@ -1,0 +1,57 @@
+{
+  "tested_at": "2026-11-11T18:06:48.756151+00:00",
+  "url": "https://modeel-ai-content-studio.netlify.app",
+  "checks": [
+    {
+      "check": "Production sign-in",
+      "passed": true
+    },
+    {
+      "check": "Visible successful-only image allowance",
+      "passed": true
+    },
+    {
+      "check": "Live instagram generation",
+      "passed": true,
+      "status": 201
+    },
+    {
+      "check": "Real provider output for instagram",
+      "passed": true,
+      "model": "gemini-3.1-flash-lite"
+    },
+    {
+      "check": "Save post with visual and sound",
+      "passed": true
+    },
+    {
+      "check": "Post media choices persist",
+      "passed": true
+    },
+    {
+      "check": "Private linked visual remains available",
+      "passed": true
+    },
+    {
+      "check": "Live facebook generation",
+      "passed": true,
+      "status": 201
+    },
+    {
+      "check": "Real provider output for facebook",
+      "passed": true,
+      "model": "gemini-3.1-flash-lite"
+    },
+    {
+      "check": "Live threads generation",
+      "passed": true,
+      "status": 201
+    },
+    {
+      "check": "Real provider output for threads",
+      "passed": true,
+      "model": "gemini-3.1-flash-lite"
+    }
+  ],
+  "created_test_posts_removed": true
+}

@@ -1,0 +1,10 @@
+{
+  "sound_effects": {"chime":"valid 1.6s mono PCM WAV","pop":"valid 1.6s mono PCM WAV","whoosh":"valid 1.6s mono PCM WAV"},
+  "browser_sound_preview":"passed",
+  "motion_preview":{"format":"MP4 H.264/AAC","width":720,"height":1280,"duration_seconds":5.99,"bytes":1518290,"passed":true},
+  "backend_tests":{"passed":43,"skipped":1},
+  "frontend_lint":"passed",
+  "frontend_build":"passed",
+  "runtime_dependency_audit":{"reported_vulnerabilities":0},
+  "browser_file_download":{"verified":false,"reason":"User declined browser download permission. No workaround or further download was attempted."}
+}

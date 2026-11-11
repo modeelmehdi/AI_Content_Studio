@@ -40,3 +40,7 @@ FastAPI, MongoDB, five real Gemini text generators, secure sessions, owned CRUD,
 ## Free image verification
 
 Cloudflare Workers AI Free now powers real FLUX.1 schnell image generation. Actual generation, persistent Atlas save/read, JPEG decoding and cleanup passed (docs/IMAGE_VERIFICATION.json). Automated tests also verify image ownership and persistence across application restarts. Images use a bounded private MongoDB library rather than requiring a second storage account. Vercel Hobby is the selected Python hosting fallback because Render requested a payment card despite the Free selection.
+
+## Social post studio update
+
+The production error was traced to real Gemini HTTP 503 responses. A real Cloudflare IBM Granite backup request passed, and automatic failover is covered by tests. The initial three-image cap was replaced by a visible successful-only daily allowance. Failed image requests do not consume it. Quick Post, Facebook/Threads generators, owned image/sound attachments, original browser-generated effects and a six-second motion renderer are implemented. A real portrait MP4 preview and audio playback passed. Browser download permission was declined, so no browser-download success is claimed. Source identity was corrected locally to the verified Modeel GitHub account; Vercel's owner-account GitHub link was then explicitly authorized. Existing Git history and global settings were preserved.
