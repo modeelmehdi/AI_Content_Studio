@@ -1,0 +1,54 @@
+{
+  "tested_at": "2026-11-11T13:10:40Z",
+  "scope": "Local API + real MongoDB + real free-tier Gemini text requests",
+  "results": [
+    {
+      "check": "API health and MongoDB",
+      "passed": true
+    },
+    {
+      "check": "Real free-tier Gemini blog",
+      "passed": true,
+      "status": 201,
+      "model": "gemini-3.1-flash-lite",
+      "persisted": true,
+      "pdf_valid": true
+    },
+    {
+      "check": "Real free-tier Gemini linkedin",
+      "passed": true,
+      "status": 201,
+      "model": "gemini-3.1-flash-lite",
+      "persisted": true
+    },
+    {
+      "check": "Real free-tier Gemini instagram",
+      "passed": true,
+      "status": 201,
+      "model": "gemini-3.1-flash-lite",
+      "persisted": true
+    },
+    {
+      "check": "Real free-tier Gemini twitter",
+      "passed": true,
+      "status": 201,
+      "model": "gemini-3.1-flash-lite",
+      "persisted": true
+    },
+    {
+      "check": "Real free-tier Gemini seo",
+      "passed": true,
+      "status": 201,
+      "model": "gemini-3.1-flash-lite",
+      "persisted": true
+    },
+    {
+      "check": "Paid image service remains disabled",
+      "passed": true
+    },
+    {
+      "check": "Logout",
+      "passed": true
+    }
+  ]
+}

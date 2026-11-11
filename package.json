@@ -1,0 +1,1 @@
+{"name":"ai-content-studio-workspace","private":true,"version":"1.0.0","type":"module","scripts":{"db:local":"node scripts/local-mongodb.mjs","frontend":"npm --prefix frontend run dev -- --host 127.0.0.1 --port 5175","build":"npm --prefix frontend run build","lint":"npm --prefix frontend run lint"},"devDependencies":{"mongodb-memory-server":"^10.2.0"}}
