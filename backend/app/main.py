@@ -4,7 +4,7 @@ import re
 import secrets
 import time
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from uuid import UUID, uuid4
 import jwt
 from fastapi import FastAPI, Request, Response, Depends, HTTPException, Query
@@ -45,6 +45,16 @@ async def owned(request, content_id, user):
     if not document:
         raise HTTPException(404, 'Content not found.')
     return document
+
+
+async def image_allowance(store, user_id):
+    now = datetime.now(timezone.utc)
+    records = await store.find('usage_records', {'kind':'image','status':'success'}, limit=1000)
+    today = [r for r in records if r['created_at'][:10] == now.date().isoformat()]
+    return {'image_limit':20,'images_remaining':max(0,20-sum(r['user_id']==user_id for r in today)),
+            'workspace_images_remaining':max(0,50-len(today)),
+            'image_library_remaining':max(0,100-await store.count('image_files',{})),
+            'resets_at':(now.replace(hour=0,minute=0,second=0,microsecond=0)+timedelta(days=1)).isoformat()}
 
 
 def create_app(settings=None, store=None, ai=None):
@@ -201,13 +211,18 @@ def create_app(settings=None, store=None, ai=None):
         await store.insert('usage_records', usage)
         try:
             if kind == 'image':
-                await rate(request, 'daily-image', 3, 86400, user['id'])
-                await rate(request, 'global-daily-image', 20, 86400, 'free-image-workspace')
+                allowance=await image_allowance(store,user['id'])
+                if not allowance['images_remaining']:
+                    raise HTTPException(429, 'Your 20 free images for today have been used. The allowance resets at midnight UTC. Your prompt is preserved.')
+                if not allowance['workspace_images_remaining']:
+                    raise HTTPException(429, 'The shared free image allowance is used for today. It resets at midnight UTC. Your prompt is preserved.')
+                if not allowance['image_library_remaining']:
+                    raise HTTPException(507, 'The free image library is full. Delete an unused image to make room.')
                 raw, _mime, model = await service.generate_image(data.model_dump())
                 media = await request.app.state.media.save(raw, user['id'], ident, aspect_ratio=data.aspect_ratio)
                 output = {'title': data.topic[:100], 'text': '', 'seo_title': '', 'meta_description': '', 'suggestions': [], 'media': media}
             else:
-                methods = {'blog': service.generate_blog, 'linkedin': service.generate_linkedin_post, 'instagram': service.generate_instagram_caption, 'twitter': service.generate_twitter_post, 'seo': service.generate_seo_content}
+                methods = {'blog': service.generate_blog, 'linkedin': service.generate_linkedin_post, 'instagram': service.generate_instagram_caption, 'twitter': service.generate_twitter_post, 'facebook': service.generate_facebook_post, 'threads': service.generate_threads_post, 'seo': service.generate_seo_content}
                 output, model = await methods[kind](data.model_dump())
             document = {'id': ident, 'user_id': user['id'], 'kind': kind, 'parameters': data.model_dump(), 'model': model, 'source': 'ai-generated', 'created_at': now, 'updated_at': now, **output}
             await store.insert('generated_content', document)
@@ -245,6 +260,10 @@ def create_app(settings=None, store=None, ai=None):
     @app.put('/api/content/{content_id}')
     async def update_content(content_id: UUID, data: ContentUpdate, request: Request, user=Depends(authenticate)):
         await owned(request, content_id, user)
+        if data.image_id:
+            cover=await owned(request,data.image_id,user)
+            if cover.get('kind') != 'image':
+                raise HTTPException(422,'Choose a saved image for your post visual.')
         document = await request.app.state.store.update('generated_content', {'id': str(content_id), 'user_id': user['id']}, {**data.model_dump(), 'updated_at': timestamp()})
         return present(document)
 
@@ -278,11 +297,15 @@ def create_app(settings=None, store=None, ai=None):
             mime = 'text/plain; charset=utf-8'
         return Response(data, media_type=mime, headers={'Content-Disposition': f'attachment; filename="studio-{content_id}.{format}"'})
 
+    @app.get('/api/usage')
+    async def usage(request: Request, user=Depends(authenticate)):
+        return await image_allowance(request.app.state.store,user['id'])
+
     @app.get('/api/dashboard/stats')
     async def stats(request: Request, user=Depends(authenticate)):
         store = request.app.state.store
         query = {'user_id': user['id']}
-        counts = {kind: await store.count('generated_content', {**query, 'kind': kind}) for kind in ('blog', 'linkedin', 'instagram', 'twitter', 'seo', 'image')}
+        counts = {kind: await store.count('generated_content', {**query, 'kind': kind}) for kind in ('blog', 'linkedin', 'instagram', 'twitter', 'facebook', 'threads', 'seo', 'image')}
         return {'saved_items': sum(counts.values()), 'by_category': counts, 'successful_generations': await store.count('usage_records', {**query, 'status': 'success'}), 'failed_generations': await store.count('usage_records', {**query, 'status': 'failed'})}
 
     @app.get('/api/dashboard/recent-content')

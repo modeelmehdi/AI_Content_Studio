@@ -1,7 +1,7 @@
 from typing import Literal
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
-Kind = Literal['blog', 'linkedin', 'instagram', 'twitter', 'seo', 'image']
+Kind = Literal['blog', 'linkedin', 'instagram', 'twitter', 'facebook', 'threads', 'seo', 'image']
 
 
 class StrictModel(BaseModel):
@@ -72,6 +72,8 @@ class ContentUpdate(StrictModel):
     text: str = Field(default='', max_length=50000)
     seo_title: str = Field(default='', max_length=200)
     meta_description: str = Field(default='', max_length=500)
+    image_id: str | None = Field(default=None, pattern=r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$')
+    sound_effect: Literal['none','chime','pop','whoosh'] = 'none'
 
 
 class PublicUser(BaseModel):

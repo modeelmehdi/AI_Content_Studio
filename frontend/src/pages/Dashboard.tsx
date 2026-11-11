@@ -1,3 +1,4 @@
+import QuickPost from '../components/QuickPost';
 import {Link,useNavigate} from "react-router-dom";
 import {useEffect,useState} from "react";
 import useAuth from "../hooks/useAuth";
@@ -51,7 +52,7 @@ export default function Dashboard() {
 
         </section>
 
-        {error&&<p role="alert" className="mb-6 text-red-300">{error}</p>}
+        <QuickPost/>{error&&<p role="alert" className="mb-6 text-red-300">{error}</p>}
         <section aria-label="Your content statistics" className="mb-10 grid grid-cols-2 gap-4 lg:grid-cols-4">{[["Saved items",stats?.saved_items],["Successful generations",stats?.successful_generations],["Image creations",stats?.by_category.image],["Failed requests",stats?.failed_generations]].map(([label,value])=><div key={label} className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5"><p className="text-xs text-slate-400">{label}</p><p className="mt-3 text-3xl font-bold text-cyan-300">{value??"—"}</p></div>)}</section>
         {/* ================= CONTENT TYPES ================= */}
 

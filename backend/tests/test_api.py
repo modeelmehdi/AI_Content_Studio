@@ -59,6 +59,8 @@ class FakeAI:
     generate_linkedin_post = text
     generate_instagram_caption = text
     generate_twitter_post = text
+    generate_facebook_post = text
+    generate_threads_post = text
     generate_seo_content = text
 
     async def generate_image(self, parameters):
@@ -168,7 +170,7 @@ def test_content_crud_search_pagination_and_user_isolation(client):
     assert client.get('/api/content/' + ident).status_code == 404
 
 
-@pytest.mark.parametrize('kind', ['blog', 'linkedin', 'instagram', 'twitter', 'seo', 'image'])
+@pytest.mark.parametrize('kind', ['blog', 'linkedin', 'instagram', 'twitter', 'facebook', 'threads', 'seo', 'image'])
 def test_every_generator_persists_real_contract(client, kind):
     register(client)
     response = client.post('/api/generate/' + kind, json={'topic': 'Accessible software for everyone'})
@@ -231,3 +233,60 @@ def test_profile_and_settings_persist(client):
     assert client.put('/api/users/me', json={'name': 'New display name'}).json()['name'] == 'New display name'
     assert client.put('/api/users/me/settings', json={'default_tone': 'Friendly', 'default_language': 'English', 'brand_context': 'A careful software studio'}).status_code == 200
     assert client.get('/api/users/me/settings').json()['default_tone'] == 'Friendly'
+
+
+def test_post_visual_sound_and_ownership(client, cfg):
+    register(client)
+    visual=client.post('/api/generate/image',json={'topic':'An editorial studio visual'}).json()
+    post=client.post('/api/content',json={'kind':'facebook','title':'A useful social post','text':'A useful idea for our community.'}).json()
+    payload={'title':post['title'],'text':post['text'],'image_id':visual['id'],'sound_effect':'chime'}
+    response=client.put('/api/content/'+post['id'],json=payload)
+    assert response.status_code==200
+    assert response.json()['image_id']==visual['id']
+    assert response.json()['sound_effect']=='chime'
+    assert client.get('/api/content/'+post['id']).json()['sound_effect']=='chime'
+    with TestClient(create_app(settings=cfg,ai=FakeAI()),headers={'Origin':ORIGIN}) as peer:
+        register(peer,'cover-peer@example.com')
+        own=peer.post('/api/content',json={'kind':'threads','title':'My private post','text':'A separate account.'}).json()
+        assert peer.put('/api/content/'+own['id'],json=payload).status_code==404
+        assert peer.get(visual['image_url']).status_code==404
+    assert client.put('/api/content/'+post['id'],json={**payload,'image_id':'not-a-uuid'}).status_code==422
+    assert client.put('/api/content/'+post['id'],json={**payload,'sound_effect':'untrusted'}).status_code==422
+
+
+def test_failed_images_do_not_consume_allowance(cfg):
+    class RecoveringImageAI(FakeAI):
+        attempts=0
+        async def generate_image(self,parameters):
+            self.attempts+=1
+            if self.attempts==1:raise HTTPException(503,'Temporary provider outage')
+            return await super().generate_image(parameters)
+    with TestClient(create_app(settings=cfg,ai=RecoveringImageAI()),headers={'Origin':ORIGIN}) as client:
+        register(client)
+        assert client.get('/api/usage').json()['images_remaining']==20
+        assert client.post('/api/generate/image',json={'topic':'A garden illustration'}).status_code==503
+        assert client.get('/api/usage').json()['images_remaining']==20
+        assert client.post('/api/generate/image',json={'topic':'A garden illustration'}).status_code==201
+        assert client.get('/api/usage').json()['images_remaining']==19
+
+
+def test_primary_outage_uses_backup_writer(cfg,monkeypatch):
+    from app.services.ai_service import AIService
+    cfg.cloudflare_account_id='test-account'
+    cfg.cloudflare_api_token='test-only-token'
+    service=AIService(cfg)
+    calls=[]
+    async def unavailable(kind,parameters):raise HTTPException(503,'Primary provider busy')
+    async def backup(kind,parameters):
+        calls.append(kind)
+        output,_=await FakeAI().text(parameters)
+        return output,'test-only-backup'
+    monkeypatch.setattr(service,'gemini_text',unavailable)
+    monkeypatch.setattr(service,'cloudflare_text',backup)
+    with TestClient(create_app(settings=cfg,ai=service),headers={'Origin':ORIGIN}) as client:
+        register(client)
+        response=client.post('/api/generate/instagram',json={'topic':'A practical gardening tip'})
+        assert response.status_code==201
+        assert response.json()['model']=='test-only-backup'
+        assert calls==['instagram']
+

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {Link} from "react-router-dom";
 import {api} from "../services/api";
-import {tools,type Kind,type Content,type Health} from "../types/studio";
+import {tools,type Kind,type Content,type Health,type Usage} from "../types/studio";
 import ContentEditor from "../components/ContentEditor";
 import WorkspaceHeader from "../components/WorkspaceHeader";
 import {useEffect} from "react";
@@ -21,8 +21,9 @@ export default function BlogGenerator({kind="blog"}:{kind?:Kind}) {
   const [style,setStyle]=useState("Editorial illustration");
   const [aspectRatio,setAspectRatio]=useState("16:9");
   const [error,setError]=useState("");
+  const [usage,setUsage]=useState<Usage|null>(null);
   const [health,setHealth]=useState<Health|null>(null);
-  useEffect(()=>{api<Health>("/health").then(setHealth).catch(()=>{});api<{default_tone:string;default_language:string;brand_context:string}>("/api/users/me/settings").then(p=>{setTone(p.default_tone);setLanguage(p.default_language);setBrandContext(p.brand_context)}).catch(()=>{});},[]);
+  useEffect(()=>{api<Usage>("/api/usage").then(setUsage).catch(()=>{});api<Health>("/health").then(setHealth).catch(()=>{});api<{default_tone:string;default_language:string;brand_context:string}>("/api/users/me/settings").then(p=>{setTone(p.default_tone);setLanguage(p.default_language);setBrandContext(p.brand_context)}).catch(()=>{});},[]);
   const [loading, setLoading] = useState(false);
 
   const generateBlog = async () => {
@@ -30,10 +31,10 @@ export default function BlogGenerator({kind="blog"}:{kind?:Kind}) {
     setError("");setLoading(true);
     try{const result=await api<Content>("/api/generate/"+kind,{method:"POST",body:JSON.stringify({topic,tone,word_count:({Short:250,Medium:700,Long:1500} as Record<string,number>)[length],audience,language,keywords,instructions,industry,brand_context:brandContext,style,aspect_ratio:aspectRatio})});setContent(result);}
     catch(error){setError((error as Error).message);}
-    finally{setLoading(false);}
+    finally{setLoading(false);api<Usage>("/api/usage").then(setUsage).catch(()=>{});}
   };
   const clearContent = () => {if(content&&!confirm("Start a new brief? Your saved item stays in the library."))return;setTopic("");setContent(null);setError("");};
-  const createDraft = async () => {setLoading(true);setError("");try{setContent(await api<Content>("/api/content",{method:"POST",body:JSON.stringify({kind,title:topic.trim()||"Untitled "+tool.title+" draft",text:""})}));}catch(error){setError((error as Error).message);}finally{setLoading(false);}};
+  const createDraft = async () => {setLoading(true);setError("");try{setContent(await api<Content>("/api/content",{method:"POST",body:JSON.stringify({kind,title:topic.trim()||"Untitled "+tool.title+" draft",text:""})}));}catch(error){setError((error as Error).message);}finally{setLoading(false);api<Usage>("/api/usage").then(setUsage).catch(()=>{});}};
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
@@ -163,7 +164,7 @@ export default function BlogGenerator({kind="blog"}:{kind?:Kind}) {
               {loading ? "Working…" : "✨ Generate "+tool.title}
             </button>
 
-            {kind!=="image"&&<button type="button" disabled={loading} onClick={createDraft} className="mt-3 w-full rounded-xl border border-slate-700 py-3 text-sm font-semibold text-slate-300">Write a manual draft</button>}
+            {kind==="image"&&usage&&<p className="mt-4 text-xs leading-6 text-slate-400">{Math.min(usage.images_remaining,usage.workspace_images_remaining)} free images available today. Resets {new Date(usage.resets_at).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}. Provider limits also apply; failed generations do not use this allowance.</p>}{kind!=="image"&&<button type="button" disabled={loading} onClick={createDraft} className="mt-3 w-full rounded-xl border border-slate-700 py-3 text-sm font-semibold text-slate-300">Write a manual draft</button>}
             {/* Clear */}
 
             {content && (
@@ -257,3 +258,4 @@ export default function BlogGenerator({kind="blog"}:{kind?:Kind}) {
     </div>
   );
 }
+

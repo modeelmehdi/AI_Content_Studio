@@ -1,0 +1,86 @@
+{
+  "tested_at": "2026-11-11T17:20:02.785340+00:00",
+  "url": "https://modeel-ai-content-studio.netlify.app",
+  "checks": [
+    {
+      "check": "Public home page without hosting login",
+      "passed": true
+    },
+    {
+      "check": "Production health and persistent MongoDB",
+      "passed": true
+    },
+    {
+      "check": "Both real AI providers enabled",
+      "passed": true
+    },
+    {
+      "check": "Private API requires login",
+      "passed": true
+    },
+    {
+      "check": "Public registration and secure cookies",
+      "passed": true
+    },
+    {
+      "check": "Authenticated profile",
+      "passed": true
+    },
+    {
+      "check": "Real production text generation",
+      "passed": true
+    },
+    {
+      "check": "Production PDF export",
+      "passed": true
+    },
+    {
+      "check": "Production TXT export",
+      "passed": true
+    },
+    {
+      "check": "Real production image generation",
+      "passed": true
+    },
+    {
+      "check": "Persistent image and download",
+      "passed": true
+    },
+    {
+      "check": "Saved library contains generated items",
+      "passed": true
+    },
+    {
+      "check": "Production dashboard statistics",
+      "passed": true
+    },
+    {
+      "check": "CSRF rejects unauthorized write",
+      "passed": true
+    },
+    {
+      "check": "Saved editing",
+      "passed": true
+    },
+    {
+      "check": "Second isolated account",
+      "passed": true
+    },
+    {
+      "check": "Cross-account image denied",
+      "passed": true
+    },
+    {
+      "check": "Cross-account content denied",
+      "passed": true
+    },
+    {
+      "check": "SPA deep link",
+      "passed": true
+    },
+    {
+      "check": "Logout revokes access",
+      "passed": true
+    }
+  ]
+}
