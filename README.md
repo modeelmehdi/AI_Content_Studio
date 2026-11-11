@@ -12,7 +12,7 @@ An authenticated writing workspace by **Modeel Mehdi**. Generate blog articles, 
 - Five real Gemini text generators, bounded retries, useful errors and request limits.
 - Manual drafts, editing, search, filters, pagination, statistics and preferences.
 - PDF/TXT exports and user-controlled social sharing links.
-- Real image/Cloudinary adapters, disabled in the free text release.
+- Real FLUX image generation through Cloudflare Workers AI Free, with private persistent MongoDB images.
 
 Social links open a composer or copy content and open the chosen app. Users review and publish there. Studio does not connect social accounts or publish automatically on login.
 
@@ -54,10 +54,11 @@ $env:TEST_MONGODB_URI='mongodb://127.0.0.1:27019'
 ..\.venv\Scripts\python.exe -m pytest -q
 ```
 
-The suite covers SQLite and real MongoDB when TEST_MONGODB_URI is set. Fake AI fixtures exist only inside tests. All five real free-tier text generators, persistence and PDF export passed local verification; see [recorded results](docs/LOCAL_VERIFICATION.json). Local checks do not establish production availability.
+The suite covers SQLite and real MongoDB when TEST_MONGODB_URI is set. Fake AI fixtures exist only inside tests. All five real free-tier text generators, real Cloudflare image generation, persistence and PDF export passed verification; see [recorded results](docs/LOCAL_VERIFICATION.json). Local checks do not establish production availability.
 
 ## Deployment and limits
 
 [Free deployment](docs/DEPLOYMENT.md) · [Architecture](docs/ARCHITECTURE.md) · [API](docs/API_DOCUMENTATION.md) · [Audit](PROJECT_AUDIT.md)
 
-Render configuration selects Free; Atlas uses the existing Free cluster. No paid subscription or billing integration is enabled. Free tiers have quotas and sleeping instances. Gemini image generation is disabled because the selected image models are not free. Connected-account publishing needs separate provider OAuth applications and permissions. API keys, database passwords and session secrets stay out of Git and browser code.
+The release uses Vercel Hobby for FastAPI, Netlify for the frontend, Atlas Free, Gemini free text access and Cloudflare Workers AI Free images. Render requested a card and was not used. No paid subscription or billing integration is enabled. Free tiers have quotas. Images are limited to three per user per day and twenty per workspace per day, with up to 100 saved images. Images are center-cropped to the selected ratio and compressed to fit the free database allowance. Connected-account publishing needs separate provider OAuth applications and permissions. API keys, database passwords and session secrets stay out of Git and browser code.
+

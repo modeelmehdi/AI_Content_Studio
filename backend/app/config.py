@@ -21,6 +21,10 @@ class Settings(BaseSettings):
     gemini_api_key: str = Field(default='', repr=False)
     gemini_text_model: str = ''
     gemini_image_model: str = ''
+    image_provider: str = 'cloudflare'
+    cloudflare_account_id: str = ''
+    cloudflare_api_token: str = Field(default='', repr=False)
+    media_storage: str = 'local'
     ai_timeout_seconds: int = 90
     cloudinary_cloud_name: str = ''
     cloudinary_api_key: str = Field(default='', repr=False)
@@ -36,12 +40,24 @@ class Settings(BaseSettings):
     def cloudinary_ready(self):
         return all([self.cloudinary_cloud_name, self.cloudinary_api_key, self.cloudinary_api_secret])
 
+    @property
+    def image_ready(self):
+        provider = bool(self.cloudflare_account_id and self.cloudflare_api_token) if self.image_provider == 'cloudflare' else bool(self.gemini_api_key and self.gemini_image_model)
+        storage = self.cloudinary_ready or self.media_storage == 'mongodb' or self.environment != 'production'
+        return provider and storage
+
     @model_validator(mode='after')
     def validate_config(self):
         if len(self.jwt_secret) < 32:
             raise ValueError('Set JWT_SECRET to a random secret of at least 32 characters in backend/.env.')
         if self.database_backend not in ('sqlite', 'mongodb'):
             raise ValueError('DATABASE_BACKEND must be sqlite or mongodb.')
+        if self.image_provider not in ('cloudflare', 'gemini'):
+            raise ValueError('IMAGE_PROVIDER must be cloudflare or gemini.')
+        if self.media_storage not in ('local', 'mongodb'):
+            raise ValueError('MEDIA_STORAGE must be local or mongodb.')
+        if self.media_storage == 'mongodb' and self.database_backend != 'mongodb':
+            raise ValueError('MongoDB image storage requires MongoDB.')
         if self.database_backend == 'mongodb' and not self.mongodb_uri:
             raise ValueError('MONGODB_URI is required for MongoDB mode.')
         if self.environment == 'production':

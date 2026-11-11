@@ -55,7 +55,7 @@ def create_app(settings=None, store=None, ai=None):
         app.state.store = store or (MongoStore(cfg.mongodb_uri, cfg.mongodb_database) if cfg.database_backend == 'mongodb' else SQLiteStore(cfg.sqlite_path))
         await app.state.store.open()
         app.state.ai = ai or AIService(cfg)
-        app.state.media = MediaService(cfg)
+        app.state.media = MediaService(cfg, app.state.store)
         try:
             yield
         finally:
@@ -101,7 +101,7 @@ def create_app(settings=None, store=None, ai=None):
     @app.get('/health')
     async def health(request: Request):
         cfg = request.app.state.settings
-        return {'status': 'ok', 'database': cfg.database_backend, 'text_generation_configured': bool(cfg.gemini_api_key and cfg.gemini_text_model), 'image_generation_configured': bool(cfg.gemini_api_key and cfg.gemini_image_model and (cfg.cloudinary_ready or cfg.environment != 'production')), 'media_storage': 'cloudinary' if cfg.cloudinary_ready else 'local-development', 'environment': cfg.environment}
+        return {'status': 'ok', 'database': cfg.database_backend, 'text_generation_configured': bool(cfg.gemini_api_key and cfg.gemini_text_model), 'image_generation_configured': cfg.image_ready, 'media_storage': 'mongodb' if cfg.media_storage == 'mongodb' else 'cloudinary' if cfg.cloudinary_ready else 'local-development', 'environment': cfg.environment}
 
     async def start_session(request, response, user):
         cfg = request.app.state.settings
@@ -201,8 +201,10 @@ def create_app(settings=None, store=None, ai=None):
         await store.insert('usage_records', usage)
         try:
             if kind == 'image':
+                await rate(request, 'daily-image', 3, 86400, user['id'])
+                await rate(request, 'global-daily-image', 20, 86400, 'free-image-workspace')
                 raw, _mime, model = await service.generate_image(data.model_dump())
-                media = await request.app.state.media.save(raw, user['id'], ident)
+                media = await request.app.state.media.save(raw, user['id'], ident, aspect_ratio=data.aspect_ratio)
                 output = {'title': data.topic[:100], 'text': '', 'seo_title': '', 'meta_description': '', 'suggestions': [], 'media': media}
             else:
                 methods = {'blog': service.generate_blog, 'linkedin': service.generate_linkedin_post, 'instagram': service.generate_instagram_caption, 'twitter': service.generate_twitter_post, 'seo': service.generate_seo_content}

@@ -1,0 +1,14 @@
+{
+  "tested_at": "2026-11-11T17:04:10.427658+00:00",
+  "provider": "Cloudflare Workers AI Free",
+  "model": "@cf/black-forest-labs/flux-1-schnell",
+  "real_generation": true,
+  "persistent_read": true,
+  "dimensions": [
+    1024,
+    576
+  ],
+  "format": "JPEG",
+  "bytes": 61964,
+  "test_image_removed_from_database": true
+}

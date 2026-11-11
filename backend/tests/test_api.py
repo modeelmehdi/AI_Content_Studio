@@ -14,6 +14,40 @@ ORIGIN = 'http://testserver'
 PASSWORD = 'Test-only-password-34982'
 
 
+def test_persistent_mongodb_images_are_private_and_survive_restart(cfg):
+    if cfg.database_backend != 'mongodb':
+        pytest.skip('Persistent image library is MongoDB-only.')
+    cfg.media_storage = 'mongodb'
+    with TestClient(create_app(settings=cfg, ai=FakeAI()), headers={'Origin': ORIGIN}) as first:
+        session = register(first)
+        result = first.post('/api/generate/image', json={'topic':'A scenic landscape', 'aspect_ratio':'16:9'})
+        assert result.status_code == 201
+        item = result.json()
+        assert 'media' not in item and 'data' not in item
+        cookies = dict(first.cookies)
+    with TestClient(create_app(settings=cfg, ai=FakeAI()), headers={'Origin': ORIGIN}) as second:
+        second.cookies.update(cookies)
+        second.headers['X-CSRF-Token'] = session['csrf_token']
+        response = second.get(item['image_url'])
+        assert response.status_code == 200
+        assert response.headers['content-type'] == 'image/jpeg'
+        image = Image.open(io.BytesIO(response.content))
+        assert image.size == (1024, 576)
+        assert 'data' not in second.get('/api/content').text
+        owner_cookies = dict(second.cookies)
+        second.cookies.clear()
+        register(second, 'other-image-user@example.com')
+        assert second.get(item['image_url']).status_code == 404
+        second.cookies.clear()
+        second.cookies.update(owner_cookies)
+        second.headers['X-CSRF-Token'] = session['csrf_token']
+        assert second.delete('/api/content/'+item['id']).status_code == 200
+        assert second.get(item['image_url']).status_code == 404
+    from pymongo import MongoClient
+    with MongoClient(cfg.mongodb_uri) as client:
+        assert client[cfg.mongodb_database].image_files.count_documents({}) == 0
+
+
 class FakeAI:
     """Test-only provider. Never wired into the running application."""
     async def close(self): pass

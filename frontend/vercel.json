@@ -3,14 +3,40 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
-    {"source": "/api/:path*", "destination": "https://REPLACE-WITH-YOUR-RENDER-SERVICE.onrender.com/api/:path*"},
-    {"source": "/health", "destination": "https://REPLACE-WITH-YOUR-RENDER-SERVICE.onrender.com/health"},
-    {"source": "/((?!api/|health|assets/|favicon.svg).*)", "destination": "/index.html"}
+    {
+      "source": "/api/:path*",
+      "destination": "https://modeel-ai-content-studio-api.vercel.app/api/:path*"
+    },
+    {
+      "source": "/health",
+      "destination": "https://modeel-ai-content-studio-api.vercel.app/health"
+    },
+    {
+      "source": "/((?!api/|health|assets/|favicon.svg).*)",
+      "destination": "/index.html"
+    }
   ],
-  "headers": [{"source": "/(.*)", "headers": [
-    {"key": "X-Content-Type-Options", "value": "nosniff"},
-    {"key": "X-Frame-Options", "value": "DENY"},
-    {"key": "Referrer-Policy", "value": "strict-origin-when-cross-origin"},
-    {"key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()"}
-  ]}]
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ]
+    }
+  ]
 }

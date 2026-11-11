@@ -36,3 +36,7 @@ Live Gemini calls require a valid configured key and supported model access. Pro
 The owner subsequently supplied AI_Content_Studio.zip from the Desktop project directory. Its developed cyan/navy React landing page, login, registration, dashboard and blog layout were integrated into this existing repository. Simulated localStorage authentication and template-only Express generation were replaced with the Python API. Existing design and Git history were preserved.
 
 FastAPI, MongoDB, five real Gemini text generators, secure sessions, owned CRUD, preferences, history, exports and social sharing are implemented. Backend tests passed 32 SQLite/MongoDB checks, frontend lint/build passed, and all five real free-tier text requests passed (docs/LOCAL_VERIFICATION.json). A restricted Atlas read/write credential was verified. Production availability is tracked separately. Image generation and connected-account publishing remain disabled/unconfigured for the free release.
+
+## Free image verification
+
+Cloudflare Workers AI Free now powers real FLUX.1 schnell image generation. Actual generation, persistent Atlas save/read, JPEG decoding and cleanup passed (docs/IMAGE_VERIFICATION.json). Automated tests also verify image ownership and persistence across application restarts. Images use a bounded private MongoDB library rather than requiring a second storage account. Vercel Hobby is the selected Python hosting fallback because Render requested a payment card despite the Free selection.

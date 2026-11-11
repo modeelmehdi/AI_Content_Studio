@@ -11,3 +11,7 @@ Gemini returns validated structured text. Generation is persisted before the fro
 Exports use ownership-checked TXT/PDF endpoints. ReportLab embeds the included Noto Sans font and paginates output. Private image responses proxy authenticated storage rather than exposing credentials.
 
 Social sharing opens user-controlled composers or copies content and opens a platform. It does not authenticate social accounts or report posts as published. Direct account publishing requires separately configured provider OAuth applications, reviewed scopes and an explicit publish step.
+
+## Verified free image path
+
+Image generation is now routed to Cloudflare Workers AI Free with a fixed FLUX.1 schnell model. The application never upgrades the plan or falls back to a paid model. Private image data is compressed and center-cropped to the requested ratio, then stored separately in MongoDB. Metadata remains in generated_content. Access requires ownership, and deletion removes both records. Storage and daily request caps bound the free-tier footprint. The Cloudinary adapter remains available as an optional alternative; it is not required for the free release. Vercel Hobby hosts the Python backend; the frontend's Netlify proxy keeps browser cookies on one origin.
