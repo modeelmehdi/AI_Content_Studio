@@ -82,3 +82,8 @@ Vercel Hobby hosts FastAPI; Netlify hosts the frontend and same-origin proxy; At
 [Deployment guide](docs/DEPLOYMENT.md) · [Architecture](docs/ARCHITECTURE.md) · [API](docs/API_DOCUMENTATION.md) · [Initial audit and progress](PROJECT_AUDIT.md)
 
 The GitHub Actions configuration is provided as an optional template at docs/github-actions.example.yml. It is not installed as an active workflow. Provider quotas, plan policies and browser codec support can change; no paid upgrade or automatic social publishing is part of this release.
+
+### Music for motion posts
+Five original six-second instrumental loops, local MP3/WAV/M4A import (browser codec support applies), volume and start-time controls are available in the media editor. Music and the selected sound effect are mixed into the video audio track. Music files and choices stay in the current tab, rather than being saved to the account. Online browsing opens Pixabay or Mixkit; download there and import locally, following the track license. No paid music API is used.
+
+Verified: lint/build; all five sample arrays are finite and non-silent; real 720×1280 MP4 rendering with original background music; local WAV import and integrated video rendering; no overflow at 390/768/1440px. Browser file downloads were not retried.

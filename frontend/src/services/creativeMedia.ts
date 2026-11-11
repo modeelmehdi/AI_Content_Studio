@@ -1,5 +1,16 @@
 export type SoundEffect='none'|'chime'|'pop'|'whoosh';
 
+export type MusicStyle='none'|'uplift'|'lofi'|'ambient'|'dance'|'piano';
+export function musicSamples(style:MusicStyle,rate=44100){
+  const data=new Float32Array(rate*6);const notes=style==='uplift'?[261.63,329.63,392,523.25]:style==='lofi'?[220,261.63,329.63,392]:style==='ambient'?[130.81,196,261.63,329.63]:style==='dance'?[146.83,174.61,220,293.66]:[261.63,392,329.63,293.66];
+  if(style==='none')return data;
+  for(let i=0;i<data.length;i++){const t=i/rate,beat=style==='ambient'?1.5:style==='dance'?.375:.75,age=t%beat,hz=notes[Math.floor(t/beat)%notes.length];let v=Math.sin(2*Math.PI*hz*t)*Math.exp(-age*(style==='ambient'?1:4))*.22;v+=Math.sin(2*Math.PI*hz*.5*t)*.1;if(style==='dance'||style==='uplift')v+=Math.sin(2*Math.PI*55*age)*Math.exp(-age*22)*.25;data[i]=v*Math.min(1,t*20,(6-t)*5);}
+  return data;
+}
+export async function decodeMusic(file:File){
+  if(file.size>20*1024*1024)throw Error('Choose an audio file smaller than 20 MB.');
+  const context=new AudioContext();try{const buffer=await context.decodeAudioData(await file.arrayBuffer());if(buffer.duration>600)throw Error('Choose a track shorter than 10 minutes.');return buffer;}catch(e){if(e instanceof Error&&e.message.startsWith('Choose'))throw e;throw new Error('This audio format could not be read. Try MP3, WAV or M4A.',{cause:e});}finally{await context.close();}
+}
 export function effectSamples(effect:SoundEffect,rate=44100){
   const data=new Float32Array(Math.round(rate*1.6));let phase=0,last=0;
   for(let i=0;i<data.length;i++){
@@ -31,7 +42,7 @@ export function recordingMime(){
   return ['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4','video/webm;codecs=vp8,opus','video/webm'].find(type=>MediaRecorder.isTypeSupported(type))||'';
 }
 
-export async function renderMotionPost({title,text,imageUrl,sound,portrait,onProgress}:{title:string;text:string;imageUrl:string;sound:SoundEffect;portrait:boolean;onProgress:(p:number)=>void}){
+export async function renderMotionPost({title,text,imageUrl,sound,portrait,onProgress,music='none',musicBuffer,musicVolume=.5,musicStart=0}:{title:string;text:string;imageUrl:string;sound:SoundEffect;portrait:boolean;onProgress:(p:number)=>void;music?:MusicStyle;musicBuffer?:AudioBuffer|null;musicVolume?:number;musicStart?:number}){
   const mime=recordingMime();if(!mime)throw Error('Video rendering is unavailable in this browser. You can still use the image and WAV sound separately.');
   const response=await fetch(imageUrl,{credentials:'include'});if(!response.ok)throw Error('Your saved image could not be loaded. Choose another visual.');
   const imageBlob=await response.blob();const imageObjectUrl=URL.createObjectURL(imageBlob);const image=new Image();
@@ -40,11 +51,14 @@ export async function renderMotionPost({title,text,imageUrl,sound,portrait,onPro
   const audio=new AudioContext();let stream:MediaStream|undefined;
   try{
     await audio.resume();const destination=audio.createMediaStreamDestination();const samples=effectSamples(sound,audio.sampleRate);const audioBuffer=audio.createBuffer(1,samples.length,audio.sampleRate);audioBuffer.getChannelData(0).set(samples);const source=audio.createBufferSource();source.buffer=audioBuffer;source.connect(destination);
+    let musicSource:AudioBufferSourceNode|undefined;
+    if(musicBuffer||music!=='none'){musicSource=audio.createBufferSource();if(musicBuffer)musicSource.buffer=musicBuffer;else{const values=musicSamples(music,audio.sampleRate);const buffer=audio.createBuffer(1,values.length,audio.sampleRate);buffer.getChannelData(0).set(values);musicSource.buffer=buffer;}const gain=audio.createGain();const volume=Math.max(0,Math.min(1,musicVolume));gain.gain.setValueAtTime(0,audio.currentTime);gain.gain.linearRampToValueAtTime(volume,audio.currentTime+.15);gain.gain.setValueAtTime(volume,audio.currentTime+5.5);gain.gain.linearRampToValueAtTime(0,audio.currentTime+6);musicSource.connect(gain);gain.connect(destination);}
+
     stream=canvas.captureStream(30);destination.stream.getAudioTracks().forEach(track=>stream!.addTrack(track));const recorder=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:3_000_000});const chunks:BlobPart[]=[];const completed=new Promise<Blob>((resolve,reject)=>{recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};recorder.onstop=()=>resolve(new Blob(chunks,{type:mime}));recorder.onerror=()=>reject(Error('Video rendering failed. Your post and image are still saved.'));});
     const width=canvas.width,height=canvas.height;
     function wrapped(value:string,y:number,font:string,lineHeight:number,maxLines:number){ctx!.font=font;ctx!.fillStyle='#fff';const words=value.split(/\s+/);let line='',lines=0;for(const word of words){if(ctx!.measureText(line+word).width>width-112&&line){ctx!.fillText(line.trim(),56,y);line='';y+=lineHeight;if(++lines>=maxLines)return;}line+=word+' ';}if(line&&lines<maxLines)ctx!.fillText(line.trim(),56,y);}
     const start=performance.now();
     function frame(now:number){const progress=Math.min(1,(now-start)/6000);const scale=Math.max(width/image.width,height/image.height)*(1+progress*0.035);ctx!.drawImage(image,(width-image.width*scale)/2,(height-image.height*scale)/2,image.width*scale,image.height*scale);const gradient=ctx!.createLinearGradient(0,0,0,height);gradient.addColorStop(0,'rgba(2,6,23,.12)');gradient.addColorStop(0.42,'rgba(2,6,23,.5)');gradient.addColorStop(1,'rgba(2,6,23,.96)');ctx!.fillStyle=gradient;ctx!.fillRect(0,0,width,height);ctx!.fillStyle='#22d3ee';ctx!.fillRect(56,height*0.5-55,64,6);wrapped(title,height*0.5,'bold 42px sans-serif',50,3);wrapped(text.slice(0,220),height*0.5+170,'26px sans-serif',37,portrait?8:3);onProgress(Math.round(progress*100));if(progress<1)requestAnimationFrame(frame);else recorder.stop();}
-    recorder.start();source.start();requestAnimationFrame(frame);return {blob:await completed,extension:mime.startsWith('video/mp4')?'mp4':'webm'};
+    recorder.start();source.start();musicSource?.start(0,musicBuffer?Math.max(0,Math.min(musicStart,musicBuffer.duration-.01)):0);requestAnimationFrame(frame);return {blob:await completed,extension:mime.startsWith('video/mp4')?'mp4':'webm'};
   }finally{stream?.getTracks().forEach(track=>track.stop());await audio.close();}
 }
