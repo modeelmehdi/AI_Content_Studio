@@ -1,7 +1,7 @@
 import {Link} from "react-router-dom";
 const plans = [
  {name:"Your writing space",price:"Create",description:"Start with a brief or write your own draft.",features:["Blogs and social posts","SEO titles and descriptions","Editable content","Writing preferences"],button:"Start writing",popular:false},
- {name:"Connected AI",price:"Generate",description:"Use a server-configured AI provider.",features:["Six content types","Configurable model access","Honest service-status messages","Images when the provider is enabled"],button:"Open workspace",popular:true},
+ {name:"Connected AI",price:"Generate",description:"Use a server-configured AI provider.",features:["Seven text tools and AI images","Configurable model access","Honest service-status messages","Images when the provider is enabled"],button:"Open workspace",popular:true},
  {name:"Private library",price:"Keep",description:"Return to your work whenever you need it.",features:["Persistent saved content","Search and category filters","TXT and PDF exports","Private image downloads"],button:"Create an account",popular:false},
 ];
 
@@ -44,7 +44,7 @@ export default function Pricing() {
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`relative rounded-3xl border p-8 transition duration-300 hover:-translate-y-2 ${
+              className={`relative flex flex-col rounded-3xl border p-8 transition duration-300 hover:-translate-y-2 ${
                 plan.popular
                   ? "border-cyan-400/60 bg-slate-950 shadow-2xl shadow-cyan-500/10"
                   : "border-slate-800 bg-slate-950/70"
@@ -55,7 +55,7 @@ export default function Pricing() {
 
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 px-5 py-2 text-xs font-bold uppercase tracking-wider text-white">
-                  Connected workflow
+                  Writing and media
                 </div>
               )}
 
@@ -81,7 +81,7 @@ export default function Pricing() {
 
               <Link
                 to="/register"
-                className={`mt-8 w-full rounded-xl px-6 py-3.5 font-semibold transition ${
+                className={`mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-xl text-center px-6 py-3.5 font-semibold transition ${
                   plan.popular
                     ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20 hover:scale-[1.02]"
                     : "border border-slate-700 bg-slate-900 text-white hover:border-cyan-400 hover:bg-slate-800"

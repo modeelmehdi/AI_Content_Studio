@@ -33,16 +33,16 @@ export default function Home() {
           {/* Badge */}
 
           <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-5 py-2 text-sm font-medium text-cyan-300">
-            ✨ AI-powered content creation
+            Your content workspace
           </div>
 
           {/* Heading */}
 
           <h1 className="text-5xl font-extrabold leading-tight tracking-tight text-white sm:text-6xl lg:text-7xl">
-            Create Amazing Content
+            Make your next post
 
             <span className="mt-2 block bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
-              From your next idea.
+              Sound like yourself.
             </span>
           </h1>
 
