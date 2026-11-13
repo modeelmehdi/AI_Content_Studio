@@ -1,0 +1,119 @@
+{
+  "tested_at": "2026-11-13T14:18:54.294470+00:00",
+  "checks": [
+    {
+      "kind": "instagram",
+      "passed": true,
+      "model": "gemini-3.1-flash-lite",
+      "characters": 656,
+      "output": {
+        "title": "Checking Soil Moisture for Balcony Herbs",
+        "text": "Before you reach for the watering can, check your soil moisture with a simple finger test. Insert your index finger about two inches into the potting mix. If the soil feels dry or dusty at your fingertip, it is time to water your herbs. However, if you feel any dampness or coolness, wait another day. Pots on balconies often dry out differently depending on wind and sunlight exposure, so relying on a physical check rather than a strict schedule prevents overwatering and keeps root systems healthy. Checking regularly helps you learn the specific needs of your containers. #balconygardening #herbgarden #gardeningtips #containergardening #urbangardening",
+        "seo_title": "How to Check Soil Moisture in Balcony Herb Pots",
+        "meta_description": "Learn the simple finger test to determine when your balcony herbs actually need water, ensuring healthier growth and avoiding overwatering.",
+        "suggestions": [
+          "Place finger two inches deep",
+          "Water only when dry",
+          "Monitor balcony microclimates",
+          "Avoid fixed watering schedules"
+        ]
+      }
+    },
+    {
+      "kind": "facebook",
+      "passed": true,
+      "model": "gemini-3.1-flash-lite",
+      "characters": 551,
+      "output": {
+        "title": "Simple Soil Check for Balcony Herbs",
+        "text": "Overwatering is a common challenge for container gardening, especially with small balcony pots. Before you reach for the watering can, use the finger test to check if your herbs actually need moisture. Insert your index finger about an inch into the soil near the edge of the pot. If the soil feels dry or dusty to the touch, it is time to water. If it still feels cool or damp, skip it for another day. This simple practice prevents root rot and keeps your potted plants healthy throughout the season. How do you keep track of your watering schedule?",
+        "seo_title": "How to Check Soil Moisture for Potted Herbs",
+        "meta_description": "Learn the simple finger test to determine when to water your balcony herb pots and prevent common overwatering mistakes.",
+        "suggestions": [
+          "Container gardening tips",
+          "Herb care basics",
+          "Balcony garden maintenance"
+        ]
+      }
+    },
+    {
+      "kind": "linkedin",
+      "passed": true,
+      "model": "gemini-3.1-flash-lite",
+      "characters": 626,
+      "output": {
+        "title": "Checking Soil Moisture in Small Containers",
+        "text": "Overwatering is a common challenge for those keeping herb pots on a balcony. Before you reach for your watering can, perform a simple finger test to assess the moisture level of your soil. Gently push your index finger into the potting mix up to the second knuckle. If the soil feels damp or cool, your herbs likely have enough water for the day. If the soil is dry and crumbly, it is time to water. This tactile approach helps you avoid waterlogged roots and ensures your container plants receive only the hydration they need. How do you monitor your balcony garden's needs? #gardeningtips #urbangardening #containergardening",
+        "seo_title": "How to check soil moisture in container herb gardens",
+        "meta_description": "Learn a simple, practical method to check your balcony herb pot soil moisture levels before watering.",
+        "suggestions": [
+          "Check the soil at the second knuckle depth.",
+          "Water only when the top layer of soil feels dry.",
+          "Avoid a set watering schedule to prevent overwatering."
+        ]
+      }
+    },
+    {
+      "kind": "twitter",
+      "passed": true,
+      "model": "@cf/ibm-granite/granite-4.0-h-micro",
+      "characters": 162,
+      "output": {
+        "title": "Check Soil Moisture",
+        "text": "Before watering balcony herbs, stick your finger 1-2\" into the potting mix. If it feels dry, water. This simple test prevents overwatering common in small spaces.",
+        "seo_title": "",
+        "meta_description": "",
+        "suggestions": [
+          "next tip on fertilizing"
+        ]
+      }
+    },
+    {
+      "kind": "threads",
+      "passed": true,
+      "model": "@cf/ibm-granite/granite-4.0-h-micro",
+      "characters": 232,
+      "output": {
+        "title": "Check Soil Moisture Before Watering",
+        "text": "Stick your finger 1-2 inches into the potting mix. If it feels dry, it's time to water your balcony herbs. This simple test helps you water just enough without overdoing it. Happy gardening! #BalconyGardening #HerbCare #BeginnerTips",
+        "seo_title": "",
+        "meta_description": "",
+        "suggestions": []
+      }
+    },
+    {
+      "kind": "seo",
+      "passed": true,
+      "model": "@cf/ibm-granite/granite-4.0-h-micro",
+      "characters": 150,
+      "output": {
+        "title": "Check soil before watering balcony herbs",
+        "text": "Only water when the top inch of soil feels dry. Stick your finger in the pot - if it's dry, give your herbs a drink. Overwatering kills balcony herbs.",
+        "seo_title": "Simple soil test for balcony herbs",
+        "meta_description": "Quickly check soil dryness with a finger to avoid overwatering balcony herbs",
+        "suggestions": [
+          "Next post: Choosing herbs for small spaces"
+        ]
+      }
+    },
+    {
+      "kind": "blog",
+      "passed": true,
+      "model": "gemini-3.1-flash-lite",
+      "characters": 527,
+      "output": {
+        "title": "Checking Soil Moisture for Balcony Herbs",
+        "text": "Before you reach for the watering can, check your herb pots to avoid overwatering. The most reliable method is the finger test. Insert your index finger about two inches into the soil. If the soil feels dry and crumbly at your fingertip, it is time to water. If you feel any dampness or cool soil, wait a day or two. Herbs in small containers often dry out quickly, but their roots need oxygen. Feeling the soil texture directly is more accurate than relying on a fixed schedule, especially with varying apartment temperatures.",
+        "seo_title": "How to Check Soil Moisture for Apartment Herb Gardens",
+        "meta_description": "Learn the simple finger test to determine when to water your balcony herb pots and prevent common overwatering mistakes.",
+        "suggestions": [
+          "indoor gardening tips",
+          "herb garden care",
+          "balcony gardening",
+          "watering plants",
+          "urban gardening"
+        ]
+      }
+    }
+  ]
+}
